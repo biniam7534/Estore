@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to our E-commerce Store</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <h2>E-commerce</h2>
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="search product....">
+            <i class="fas fa-search"></i>
+        </div>
+        <button class="cart-btn" onclick="toggleCart()"> 
+      Cart (<span id="cart-count">0</span>)
+    </button>
+    </header>
+
+    <nav class="category-filter">
+        <button class="category-btn active" data-category="all">All</button>
+        <button class="category-btn" data-category="electronics">Electronics Material</button>
+        <button class="category-btn" data-category="traditional-clothes">Traditional Clothes</button>
+        <button class="category-btn" data-category="fashion-clothes">Fashion Clothes</button>
+        <button class="category-btn" data-category="home-material">Home Material</button>
+    </nav>
+
+    <div class="products-container" id="products-container"></div>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cart-sidebar">
+        <h2>Your Cart</h2>
+        <div class="cart-items" id="cart-items"></div>
+        <div class="cart-total">
+            <h3>Total: ETB <span id="cart-total">0</span></h3>
+            <button class="Checkout-btn" onclick="showPaymentModal()">Checkout</button>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="payment-modal" id="payment-modal">
+        <div class="payment-content">
+            <span class="close-btn" onclick="closePaymentModal()">✖</span>
+            <h2>Payment Details</h2>
+
+            <div class="payment-methods">
+                <button class="payment-method active" data-method="credit-card">
+          <i class="fas fa-credit-card"></i> Credit Card
+        </button>
+                <button class="payment-method" data-method="paypal">
+          <i class="fab fa-paypal"></i> PayPal
+        </button>
+                <button class="payment-method" data-method="crypto">
+          <i class="fas fa-coins"></i> Crypto
+        </button>
+            </div>
+
+            <form id="payment-form" onsubmit="processPayment(event)">
+                <div class="form-group">
+                    <label for="card-number">Card Number</label>
+                    <input type="text" pattern="\d{16}" maxlength="16" required />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="month" required />
+                    </div>
+                    <div class="form-group">
+                        <label>CW</label>
+                        <input type="text" pattern="\d{3}" required />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Card Holder Name</label>
+                    <input type="text" required />
+                </div>
+
+                <button type="submit" class="pay-now-btn">
+          <i class="fas fa-lock"></i> Pay ETB 
+          <span id="payment-total">0</span>
+        </button>
+            </form>
+
+            <div class="payment-processing" id="payment-processing">
+                <div class="spinner"></div>
+                <p>Processing payment...</p>
+            </div>
+
+            <div class="payment-success" id="payment-success">
+                <i class="fas fa-check-circle"></i>
+                <h3>Payment Successful</h3>
+                <p>Thanks for your purchase</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
