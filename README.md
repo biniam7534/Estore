@@ -1,0 +1,1 @@
+E-Ecommerce is a frontend shopping web application built with HTML, CSS, and JavaScript. It includes product browsing, cart management, checkout flow, and a payment success modal to simulate a real online shopping experience.
