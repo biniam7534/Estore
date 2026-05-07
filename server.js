@@ -42,10 +42,7 @@ app.get('/api/products', async (req, res) => {
     }
 });
 
-// For any other request, serve index.html
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
+// Static middleware serves index.html at the root
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
