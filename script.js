@@ -1,22 +1,37 @@
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let activeCategory = "all";
-let searchQuery = " ";
-const products = [
-    { id: 1, name: "Wireless Headphone", price: 3500.00, image: "./images/images (10).jpg", category: "electronics", description: "High-quality wireless headphones with noise cancellation and long battery life." },
-    { id: 2, name: "Smart phone", price: 42500.00, image: "./images/iphone.avif", category: "electronics", description: "Latest smartphone with advanced features and sleek design." },
-    { id: 3, name: "Men suit", price: 18000.00, image: "./images/shopping (1).webp", category: "fashion-clothes", description: "Suit designed for formal occasions, made with high-quality fabric." },
-    { id: 4, name: "Camera", price: 60000.00, image: "./images/camera.avif", category: "electronics", description: "High quality camera for images and videos." },
-    { id: 5, name: "Plate", price: 12000.00, image: "./images/download.jpg", category: "home-material", description: "A luxury plate for stylish dining." },
-    { id: 6, name: "Eye glass", price: 2800.00, image: "./images/vishnu-prasad-STykhkcG-p8-unsplash.jpg", category: "electronics", description: "Stylish eyewear protecting eyes from UV rays." },
-    { id: 7, name: "Female dress", price: 140000.00, image: "./images/download.webp", category: "fashion-clothes", description: "A beautiful and elegant dress." },
-    { id: 8, name: "Habesha tebab", price: 10099.90, image: "./images/shopping.webp", category: "traditional-clothes", description: "Traditional Ethiopian wear." },
-    { id: 9, name: "Smart watch", price: 6700.99, image: "./images/daniel-korpai-QhF3YGsDrYk-unsplash.jpg", category: "electronics", description: "A smartwatch combining digital watch with advanced features." },
-    { id: 10, name: "Glass", price: 1199.99, image: "./images/glass.avif", category: "home-material", description: "A glass container for drinking beverages." }
-];
+let searchQuery = "";
+let products = [];
+
+async function fetchProducts() {
+    try {
+        const url = new URL('/api/products', window.location.origin);
+        if (activeCategory !== 'all') url.searchParams.append('category', activeCategory);
+        if (searchQuery) url.searchParams.append('search', searchQuery);
+
+        const response = await fetch(url);
+        products = await response.json();
+        renderProducts();
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        document.getElementById("products-container").innerHTML =
+            '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: red;">Failed to load products. Make sure the server and MongoDB are running.</div>';
+    }
+}
 
 function initProducts() {
+    fetchProducts();
+}
+
+function renderProducts() {
     const container = document.getElementById("products-container");
     container.innerHTML = "";
+
+    if (products.length === 0) {
+        container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem;">No products found</div>';
+        return;
+    }
+
     products.forEach(product => {
         const productCard = document.createElement("div");
         productCard.className = "product-card";
@@ -25,7 +40,7 @@ function initProducts() {
       <h2 class="product-title">${product.name}</h2>
       <p class="product-description">${product.description}</p>
       <p class="product-price">Birr ${product.price.toFixed(2)}</p>
-      <button class="add-to-cart" onclick="addToCart(${product.id})">Add to Cart</button>
+      <button class="add-to-cart" onclick="addToCart('${product._id}')">Add to Cart</button>
     `;
         container.appendChild(productCard);
     });
@@ -40,12 +55,12 @@ function saveCartToLocalStorage() {
 }
 
 function addToCart(productId) {
-    const product = products.find(p => p.id === productId);
-    const existingItem = cart.find(item => item.id === productId);
+    const product = products.find(p => p._id === productId);
+    const existingItem = cart.find(item => item._id === productId);
     if (existingItem) {
         existingItem.Quantity++;
     } else {
-        cart.push({...product, Quantity: 1 });
+        cart.push({ ...product, Quantity: 1 });
     }
     updateCartDisplay();
     saveCartToLocalStorage();
@@ -65,13 +80,13 @@ function updateCartDisplay() {
         cartItem.className = "cart-item";
         cartItem.innerHTML = `
       <div style="display: flex; align-items: center;">
-        <img src="${item.image}" alt="${item.name}" style="width:50px;height:50px;margin-right:10px;">
+        <img src="${item.image}" alt="${item.name}" style="width:50px;height:50px;margin-right:10px;object-fit:cover;">
         <div>
           <h3>${item.name}</h3>
           <p>${item.price} x ${item.Quantity}</p>
         </div>
       </div>
-      <button class="remove-item" onclick="removeFromCart(${item.id})">Remove</button>
+      <button class="remove-item" onclick="removeFromCart('${item._id}')">Remove</button>
     `;
         cartItems.appendChild(cartItem);
     });
@@ -81,7 +96,7 @@ function updateCartDisplay() {
 }
 
 function removeFromCart(productId) {
-    cart = cart.filter(item => item.id !== productId);
+    cart = cart.filter(item => item._id !== productId);
     updateCartDisplay();
     saveCartToLocalStorage();
 }
@@ -103,6 +118,28 @@ function closePaymentModal() {
 document.addEventListener("DOMContentLoaded", () => {
     initProducts();
     updateCartDisplay();
+
+    // Event listeners for category buttons
+    const categoryBtns = document.querySelectorAll(".category-btn");
+    categoryBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            categoryBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            activeCategory = btn.dataset.category;
+            fetchProducts();
+        });
+    });
+
+    // Event listener for search input
+    const searchInput = document.getElementById("search-input");
+    let searchTimeout;
+    searchInput.addEventListener("input", (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            searchQuery = e.target.value;
+            fetchProducts();
+        }, 300);
+    });
 });
 
 function resetPaymentUI() {
@@ -110,34 +147,23 @@ function resetPaymentUI() {
     document.getElementById("payment-processing").style.display = "none";
     document.getElementById("payment-success").style.display = "none";
     document.getElementById("payment-form").style.display = "block";
-
 }
 
 function processPayment(e) {
-    e.preventDefault()
-        //show animation processing
-    document.getElementById("payment-form").style.display = "none"
+    e.preventDefault();
+    document.getElementById("payment-form").style.display = "none";
     document.getElementById("payment-processing").style.display = "block";
+
     setTimeout(() => {
-        document.getElementById("payment-processing").style.display = "none"
-        document.getElementById("payment-success").style.display = "block"
+        document.getElementById("payment-processing").style.display = "none";
+        document.getElementById("payment-success").style.display = "block";
 
         setTimeout(() => {
-            cart = []
-            localStorage.removeItem("cart")
-            updateCartDisplay()
-            closePaymentModal()
+            cart = [];
+            localStorage.removeItem("cart");
+            updateCartDisplay();
+            closePaymentModal();
+            resetPaymentUI();
         }, 2000);
     }, 3000);
-
-}
-//filter and display products
-function displayproducts(){
-    const container = document.getElementById("products-container");
-    container.innerHTML = " ";
-    
-    const filterproducts = products.filter((product)=>{
-        const matchsCatagory = activeCategory === "all" || product.category === activeCategory
-        const matchsSearch = product.name.to
-    })
 }
