@@ -16,9 +16,9 @@
             <input type="text" id="search-input" placeholder="search product....">
             <i class="fas fa-search"></i>
         </div>
-        <button class="cart-btn" onclick="toggleCart()"> 
-      Cart (<span id="cart-count">0</span>)
-    </button>
+        <button class="cart-btn" onclick="toggleCart()">
+            Cart (<span id="cart-count">0</span>)
+        </button>
     </header>
 
     <nav class="category-filter">
@@ -49,14 +49,14 @@
 
             <div class="payment-methods">
                 <button class="payment-method active" data-method="credit-card">
-          <i class="fas fa-credit-card"></i> Credit Card
-        </button>
+                    <i class="fas fa-credit-card"></i> Credit Card
+                </button>
                 <button class="payment-method" data-method="paypal">
-          <i class="fab fa-paypal"></i> PayPal
-        </button>
+                    <i class="fab fa-paypal"></i> PayPal
+                </button>
                 <button class="payment-method" data-method="crypto">
-          <i class="fas fa-coins"></i> Crypto
-        </button>
+                    <i class="fas fa-coins"></i> Crypto
+                </button>
             </div>
 
             <form id="payment-form" onsubmit="processPayment(event)">
@@ -78,13 +78,13 @@
 
                 <div class="form-group">
                     <label>Card Holder Name</label>
-                    <input type="text" required />
+                    <input type="text" id="cardholder-name" required />
                 </div>
 
                 <button type="submit" class="pay-now-btn">
-          <i class="fas fa-lock"></i> Pay ETB 
-          <span id="payment-total">0</span>
-        </button>
+                    <i class="fas fa-lock"></i> Pay ETB
+                    <span id="payment-total">0</span>
+                </button>
             </form>
 
             <div class="payment-processing" id="payment-processing">
@@ -96,6 +96,79 @@
                 <i class="fas fa-check-circle"></i>
                 <h3>Payment Successful</h3>
                 <p>Thanks for your purchase</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt Modal -->
+    <div class="receipt-modal" id="receipt-modal">
+        <div class="receipt-content" id="receipt-printable">
+            <div class="receipt-header">
+                <div class="receipt-store-name">🛒 E-Commerce Store</div>
+                <div class="receipt-tagline">Thank you for your purchase!</div>
+            </div>
+
+            <div class="receipt-divider"></div>
+
+            <div class="receipt-meta">
+                <div class="receipt-meta-row">
+                    <span class="receipt-meta-label">Order Number</span>
+                    <span class="receipt-meta-value" id="receipt-order-number"></span>
+                </div>
+                <div class="receipt-meta-row">
+                    <span class="receipt-meta-label">Date & Time</span>
+                    <span class="receipt-meta-value" id="receipt-date"></span>
+                </div>
+                <div class="receipt-meta-row">
+                    <span class="receipt-meta-label">Customer</span>
+                    <span class="receipt-meta-value" id="receipt-customer"></span>
+                </div>
+            </div>
+
+            <div class="receipt-divider"></div>
+
+            <table class="receipt-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="receipt-items"></tbody>
+            </table>
+
+            <div class="receipt-divider"></div>
+
+            <div class="receipt-summary">
+                <div class="receipt-summary-row">
+                    <span>Subtotal</span>
+                    <span id="receipt-subtotal"></span>
+                </div>
+                <div class="receipt-summary-row">
+                    <span>VAT (15%)</span>
+                    <span id="receipt-tax"></span>
+                </div>
+                <div class="receipt-summary-row receipt-total-row">
+                    <span>Total Paid</span>
+                    <span id="receipt-total"></span>
+                </div>
+            </div>
+
+            <div class="receipt-divider"></div>
+
+            <div class="receipt-footer">
+                <p>🎉 Your order has been confirmed!</p>
+                <p>Please keep this receipt for your records.</p>
+            </div>
+
+            <div class="receipt-actions no-print">
+                <button class="receipt-btn receipt-btn-print" onclick="printReceipt()">
+                    🖨️ Print Receipt
+                </button>
+                <button class="receipt-btn receipt-btn-close" onclick="closeReceipt()">
+                    ✖ Close
+                </button>
             </div>
         </div>
     </div>

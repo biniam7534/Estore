@@ -149,21 +149,74 @@ function resetPaymentUI() {
     document.getElementById("payment-form").style.display = "block";
 }
 
+function generateOrderNumber() {
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substr(2, 4).toUpperCase();
+    return `EST-${timestamp}-${random}`;
+}
+
 function processPayment(e) {
     e.preventDefault();
-    document.getElementById("payment-form").style.display = "none";
-    document.getElementById("payment-processing").style.display = "block";
+
+    // Capture cardholder name before form resets
+    const cardholderName = document.getElementById('cardholder-name')?.value || 'Customer';
+
+    // Snapshot cart before clearing
+    const receiptItems = cart.map(item => ({ ...item }));
+    const subtotal = receiptItems.reduce((sum, item) => sum + item.price * item.Quantity, 0);
+    const tax = subtotal * 0.15;
+    const total = subtotal + tax;
+    const orderNumber = generateOrderNumber();
+    const orderDate = new Date().toLocaleString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit'
+    });
+
+    document.getElementById('payment-form').style.display = 'none';
+    document.getElementById('payment-processing').style.display = 'block';
 
     setTimeout(() => {
-        document.getElementById("payment-processing").style.display = "none";
-        document.getElementById("payment-success").style.display = "block";
+        document.getElementById('payment-processing').style.display = 'none';
+        document.getElementById('payment-success').style.display = 'block';
 
         setTimeout(() => {
+            // Clear cart
             cart = [];
-            localStorage.removeItem("cart");
+            localStorage.removeItem('cart');
             updateCartDisplay();
             closePaymentModal();
             resetPaymentUI();
-        }, 2000);
+
+            // Show receipt
+            showReceipt({ orderNumber, orderDate, cardholderName, receiptItems, subtotal, tax, total });
+        }, 1800);
     }, 3000);
+}
+
+function showReceipt({ orderNumber, orderDate, cardholderName, receiptItems, subtotal, tax, total }) {
+    const itemsHTML = receiptItems.map(item => `
+        <tr>
+            <td>${item.name}</td>
+            <td class="receipt-qty">${item.Quantity}</td>
+            <td class="receipt-price">ETB ${(item.price * item.Quantity).toFixed(2)}</td>
+        </tr>
+    `).join('');
+
+    document.getElementById('receipt-order-number').textContent = orderNumber;
+    document.getElementById('receipt-date').textContent = orderDate;
+    document.getElementById('receipt-customer').textContent = cardholderName;
+    document.getElementById('receipt-items').innerHTML = itemsHTML;
+    document.getElementById('receipt-subtotal').textContent = `ETB ${subtotal.toFixed(2)}`;
+    document.getElementById('receipt-tax').textContent = `ETB ${tax.toFixed(2)}`;
+    document.getElementById('receipt-total').textContent = `ETB ${total.toFixed(2)}`;
+
+    document.getElementById('receipt-modal').style.display = 'flex';
+}
+
+function closeReceipt() {
+    document.getElementById('receipt-modal').style.display = 'none';
+}
+
+function printReceipt() {
+    window.print();
 }
