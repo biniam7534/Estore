@@ -11,6 +11,28 @@ async function fetchProducts() {
 
         const response = await fetch(url);
         products = await response.json();
+        products = products.map((product) => {
+            if (product.name === "iPad Pro") {
+                return {
+                    ...product,
+                    price: 1500.00,
+                    description: "Compact wireless earbuds with clear sound and comfortable fit."
+                };
+            }
+            if (product.name === "Bridal Wedding Dress" || product.name === "Traditional Wedding Dress") {
+                return { ...product, price: 15000.00 };
+            }
+            if (product.name === "Kitchen Utensil Set") {
+                return { ...product, price: 90000.00 };
+            }
+            if (product.name === "Plate") {
+                return { ...product, price: 1200.00 };
+            }
+            if (product.name === "Crystal Wine Glass") {
+                return { ...product, image: "./images/crystal_wine_glass.png" };
+            }
+            return product;
+        });
         renderProducts();
     } catch (error) {
         console.error('Error fetching products:', error);
