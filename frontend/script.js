@@ -2,10 +2,11 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 let activeCategory = "all";
 let searchQuery = "";
 let products = [];
+const API_BASE_URL = window.API_BASE_URL || "http://localhost:5000";
 
 async function fetchProducts() {
     try {
-        const url = new URL('/api/products', window.location.origin);
+        const url = new URL('/api/products', API_BASE_URL);
         if (activeCategory !== 'all') url.searchParams.append('category', activeCategory);
         if (searchQuery) url.searchParams.append('search', searchQuery);
 

@@ -1,18 +1,15 @@
 {
   "name": "estore",
   "version": "1.0.0",
-  "description": "E-Ecommerce is a frontend shopping web application built with HTML, CSS, and JavaScript. It includes product browsing, cart management, checkout flow, and a payment success modal to simulate a real online shopping experience.",
-  "main": "products.js",
+  "description": "Monorepo with separate frontend and backend for Estore.",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:backend": "npm --prefix backend run start",
+    "start:frontend": "python3 -m http.server 5500 --directory frontend",
+    "seed": "npm --prefix backend run seed",
+    "test": "echo \"No tests configured\""
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.4.2",
-    "express": "^5.2.1",
-    "mongoose": "^9.6.1"
-  }
+  "license": "ISC"
 }
